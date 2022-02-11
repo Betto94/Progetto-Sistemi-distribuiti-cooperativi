@@ -19,7 +19,8 @@ contract GestoreGenerale is GestioneRuoli{
     );
 
     /**
-    * @dev Funzione che crea una nuova carta per un cliente
+    * @dev Funzione che crea una nuova carta per un cliente e gli assegna un codice univoco
+    * Questa funzione può essere invocata dal proprietario o da un funzionario
     * @param c cliente per il quale va creata la carta
     */
     function addCarta(Cliente memory c) public onlyFunzionarioOrOwner returns(bytes32) {

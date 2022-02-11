@@ -69,6 +69,7 @@ contract GestioneRuoli{
 
     /**
     * @dev Funzione che crea un nuovo funzionario e gli assegna un codice univoco
+    * Questa funzione può essere invocata solo dal proprietario
     * @param id address del funzionario
     * @param n negozio nel quale opera il funzionario
     */
@@ -88,9 +89,11 @@ contract GestioneRuoli{
 
     /**
     * @dev Funzione che crea un nuovo cliente e gli assegna un codice univoco
+    * Questa funzione può essere invocata dal proprietario o da un funzionario
     * @param nome nome del cliente
     * @param cognome cognome del cliente
     * @param data_nascita data di nascita del cliente
+    * @return ID generato
     */
     function addCliente(string memory nome, string memory cognome, string memory data_nascita) public onlyFunzionarioOrOwner returns(bytes32){
         bytes32 ID = keccak256(abi.encodePacked(nome, cognome, data_nascita));
