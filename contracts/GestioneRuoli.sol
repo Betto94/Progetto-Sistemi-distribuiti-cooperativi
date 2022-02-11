@@ -52,6 +52,7 @@ contract GestioneRuoli{
 
     constructor(){
         admin = msg.sender;
+        addFunzionario(msg.sender, Negozio.LIDL);
     }
 
     function contains(address[] memory a, address x) public pure returns(bool){ //pure non modifica la blockchain, funzionale al codice
@@ -72,10 +73,18 @@ contract GestioneRuoli{
         negozio_funzionario[f.id] = n;
     }
 
+    event NuovoCliente(
+        bytes32 id,
+        string nome,
+        string cognome,
+        string dataDiNascita
+    );
+
     function addCliente(string memory nome, string memory cognome, string memory data_nascita) public onlyFunzionarioOrOwner returns(bytes32){
         bytes32 ID = keccak256(abi.encodePacked(nome, cognome, data_nascita));
         Cliente memory c = Cliente(ID, nome, cognome, data_nascita, "null");
         clienti[c.id] = c;
+        emit NuovoCliente(ID, nome, cognome, data_nascita);
         return ID;
     }
 

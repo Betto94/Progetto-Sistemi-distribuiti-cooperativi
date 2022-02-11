@@ -14,12 +14,18 @@ contract GestoreGenerale is GestioneRuoli{
     //mapping(bytes32 => mapping(bytes32 => Carta)) public listaCarte_clienti; //
     mapping(bytes32 => Carta) public carte;
 
+    event NuovaCarta(
+        bytes32 id,
+        bytes32 id_cliente
+    );
+
     function addCarta(Cliente memory c) public onlyFunzionarioOrOwner returns(bytes32) {
         uint date = block.timestamp;
         bytes32 ID = keccak256(abi.encodePacked(c.nome, c.cognome, c.dataDiNascita, date));
         Carta memory i = Carta(ID, c.id, 0, funzionari[msg.sender].negozio);
         //listaCarte_clienti[c.id][ID] = i;
         carte[ID] = i;
+        emit NuovaCarta(ID, c.id);
         return ID;
     }
 
