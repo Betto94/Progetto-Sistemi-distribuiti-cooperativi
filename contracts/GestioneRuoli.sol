@@ -3,7 +3,7 @@ pragma solidity >=0.4.22 <0.9.0;
 
 contract GestioneRuoli{
 
-     enum Negozio{ 
+    enum Negozio{ 
         CONAD,
         CARREFOUR,
         GS,
@@ -15,7 +15,7 @@ contract GestioneRuoli{
         LIDL,
         PANORAMA
     }
-// le enum sono numerato da 0 a n
+// le enum sono numerate da 0 a n
     enum Ruolo{
         Funzionario,
         Cliente
@@ -55,6 +55,7 @@ contract GestioneRuoli{
         addFunzionario(msg.sender, Negozio.LIDL);
     }
 
+
     function contains(address[] memory a, address x) public pure returns(bool){ //pure non modifica la blockchain, funzionale al codice
         bool check = false;
     
@@ -66,6 +67,11 @@ contract GestioneRuoli{
         return check;
     }
 
+    /**
+    * @dev Funzione che crea un nuovo funzionario e gli assegna un codice univoco
+    * @param id address del funzionario
+    * @param n negozio nel quale opera il funzionario
+    */
     function addFunzionario(address id, Negozio n) public onlyOwner{
         Funzionario memory f = Funzionario(address(id), Negozio (n));
         funzionari[id] = f;
@@ -80,6 +86,12 @@ contract GestioneRuoli{
         string dataDiNascita
     );
 
+    /**
+    * @dev Funzione che crea un nuovo cliente e gli assegna un codice univoco
+    * @param nome nome del cliente
+    * @param cognome cognome del cliente
+    * @param data_nascita data di nascita del cliente
+    */
     function addCliente(string memory nome, string memory cognome, string memory data_nascita) public onlyFunzionarioOrOwner returns(bytes32){
         bytes32 ID = keccak256(abi.encodePacked(nome, cognome, data_nascita));
         Cliente memory c = Cliente(ID, nome, cognome, data_nascita, "null");
@@ -89,7 +101,7 @@ contract GestioneRuoli{
     }
 
     modifier onlyOwner{
-        require(msg.sender == admin, "Solo il proprietario puo' aggiungere funzionari");
+        require(msg.sender == admin, "Solo il proprietario puo' svolgere questa operazione");
         _; //esegue il codice che viene dopo, forse
     }
 
