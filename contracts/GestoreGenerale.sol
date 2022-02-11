@@ -39,6 +39,9 @@ contract GestoreGenerale is GestioneRuoli{
         carte[id_carta].punti -= numeroPunti;
     }
 
+    /**
+    *Prende in input un id_carta, restituisce i punti
+    */
     function getPunti(bytes32 id_carta) public view returns(uint){
         return carte[id_carta].punti;
         //return listaCarte_clienti[id_cliente][id_carta].punti;
