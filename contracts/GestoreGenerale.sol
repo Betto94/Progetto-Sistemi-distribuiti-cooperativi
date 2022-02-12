@@ -109,6 +109,38 @@ contract GestoreGenerale is GestioneRuoli{
         delete clienti[id_cliente];
     }
 
+
+    struct Consorzio{
+        bytes32 id;
+        string nome;
+        Negozio[] negozi;
+    }
+
+    mapping(Negozio => bytes32) public consorzioNegozi;
+    mapping(bytes32 => Consorzio) public consorzi;
+
+    function addConsorzio(string memory nome) public onlyOwner{
+        bytes32 ID = keccak256(abi.encodePacked(nome));
+        Negozio[] memory n;
+        Consorzio memory c = Consorzio(ID, nome, n);
+        consorzi[ID] = c;
+    }
+
+    function addNegozioConsorzio(Negozio negozio, bytes32 id_consorzio) public onlyOwner{
+        consorzioNegozi[negozio] = id_consorzio;
+        consorzi[id_consorzio].negozi.push(negozio);
+    }
+
+    function removeNegozioConsorzio(Negozio negozio) public onlyOwner{
+        bytes32 id_consorzio = consorzioNegozi[negozio];
+        delete consorzioNegozi[negozio];
+        for (uint i = 0; i < consorzi[id_consorzio].negozi.length; i++){
+            if (consorzi[id_consorzio].negozi[i] == negozio){
+                delete consorzi[id_consorzio].negozi[i];
+            }
+        }
+    }
+
 }
 
 

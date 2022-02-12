@@ -40,8 +40,8 @@ contract GestioneRuoli{
         uint punti;
         Negozio negozio;
     }
-    
 
+    
     mapping(Ruolo => address[]) public ruoli;  //associa ad ogni ruolo una lista di indirizzi
     mapping(address => Negozio) public negozio_funzionario;//associa un indirizzo (di un funzionario) a un negozio
     mapping(address => Funzionario) public funzionari;//associa un indirizzo a un ruolo funzionario
