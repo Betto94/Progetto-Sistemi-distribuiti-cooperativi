@@ -33,6 +33,7 @@ contract GestoreGenerale is GestioneRuoli{
         return ID;
     }
 
+
     /**
     * @dev Funzione che aggiunge nuovi punti ad una carta
     * @param id_carta codice univoco della carta
@@ -42,7 +43,9 @@ contract GestoreGenerale is GestioneRuoli{
         carte[id_carta].punti += numeroPunti;
         //listaCarte_clienti[id_cliente][id_carta].punti += numeroPunti;
     }
-
+    function addPunti2(bytes32 id_carta, uint numeroPunti) public onlyFunzionarioNegozio(id_carta){
+        carte[id_carta].punti += numeroPunti;
+    }
 
     /**
     * @dev Funzione che decrementa i punti ad una carta
@@ -139,6 +142,28 @@ contract GestoreGenerale is GestioneRuoli{
                 delete consorzi[id_consorzio].negozi[i];
             }
         }
+    }
+
+
+////////////////////////////////////////////////////////////////////////////
+    modifier onlyFunzionarioNegozio(bytes32 id_carta){
+        require(carte[id_carta].negozio == funzionari[msg.sender].negozio);
+        _;
+    }
+    
+    modifier onlyFunzionarioConsorzio(bytes32 id_carta){  
+        bool appartenenteConsorzio = false;
+        // Negozio negozio = carte[id_carta].negozio;
+        // bytes32 id_consorzio = consorzioNegozi[negozio];
+        bytes32 id_consorzio_carta = consorzioNegozi[carte[id_carta].negozio];
+        bytes32 id_consorzio_funzionario = consorzioNegozi[funzionari[msg.sender].negozio];
+
+        if(id_consorzio_carta == id_consorzio_funzionario)
+            appartenenteConsorzio = true;
+
+        //il negozio della carta è uguale al negozio in cui lavora il funzionario oppure fa parte dello stesso consorzio di negozi in cui lavora il funzionario
+        require(carte[id_carta].negozio == funzionari[msg.sender].negozio || appartenenteConsorzio == true);
+        _;
     }
 
 }
