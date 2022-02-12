@@ -108,11 +108,10 @@ contract GestioneRuoli{
         _; //esegue il codice che viene dopo, forse
     }
 
-
-    modifier onlyFunzionario{
-        require(contains(ruoli[Ruolo.Funzionario], msg.sender), "Solo il funzionario puo' svolgere questa operazione");
-        _;
-    }
+    // modifier onlyFunzionario{
+    //     require(contains(ruoli[Ruolo.Funzionario], msg.sender), "Solo il funzionario puo' svolgere questa operazione");
+    //     _;
+    // }
 
     modifier onlyFunzionarioOrOwner{
         require(msg.sender == admin || contains(ruoli[Ruolo.Funzionario], msg.sender), "Solo un funzionare oppure un owner possono svolgere questa operazione");
