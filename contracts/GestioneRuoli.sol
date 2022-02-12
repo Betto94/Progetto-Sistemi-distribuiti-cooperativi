@@ -15,7 +15,7 @@ contract GestioneRuoli{
         LIDL,
         PANORAMA
     }
-// le enum sono numerate da 0 a n
+
     enum Ruolo{
         Funzionario,
         Cliente
@@ -107,11 +107,6 @@ contract GestioneRuoli{
         require(msg.sender == admin, "Solo il proprietario puo' svolgere questa operazione");
         _; //esegue il codice che viene dopo, forse
     }
-
-    // modifier onlyFunzionario{
-    //     require(contains(ruoli[Ruolo.Funzionario], msg.sender), "Solo il funzionario puo' svolgere questa operazione");
-    //     _;
-    // }
 
     modifier onlyFunzionarioOrOwner{
         require(msg.sender == admin || contains(ruoli[Ruolo.Funzionario], msg.sender), "Solo un funzionare oppure un owner possono svolgere questa operazione");

@@ -42,7 +42,6 @@ contract GestoreGenerale is GestioneRuoli{
             carte[id_carta].punti += numeroPunti;  
     }
 
-
     /**
     * @dev Funzione che decrementa i punti ad una carta
     * @param id_carta codice univoco della carta
@@ -111,7 +110,6 @@ contract GestoreGenerale is GestioneRuoli{
         delete clienti[id_cliente];
     }
 
-
     struct Consorzio{
         bytes32 id;
         string nome;
@@ -150,7 +148,7 @@ contract GestoreGenerale is GestioneRuoli{
     * [2] la carta deve appartenere allo stesso consorzio di negozi in cui opera il funzionario (carta di un negozio diverso, stesso consorzio)
     *@param id_carta id univoco della carta su cui si vuole effettuare l'operazione
     */
-    function checkAuthority(bytes32 id_carta) public returns (bool){
+    function checkAuthority(bytes32 id_carta) public view returns (bool){
         bytes32 id_consorzio_carta = consorzioNegozi[carte[id_carta].negozio];
         bytes32 id_consorzio_funzionario = consorzioNegozi[funzionari[msg.sender].negozio];
         return (carte[id_carta].negozio == funzionari[msg.sender].negozio || id_consorzio_carta == id_consorzio_funzionario);
