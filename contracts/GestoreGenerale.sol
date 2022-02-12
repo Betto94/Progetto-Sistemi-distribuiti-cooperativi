@@ -26,7 +26,6 @@ contract GestoreGenerale is GestioneRuoli{
         uint date = block.timestamp;
         bytes32 ID = keccak256(abi.encodePacked(c.nome, c.cognome, c.dataDiNascita, date));
         Carta memory i = Carta(ID, c.id, 0, funzionari[msg.sender].negozio);
-        //listaCarte_clienti[c.id][ID] = i;
         carte[ID] = i;
         emit NuovaCarta(ID, c.id);
         return ID;
@@ -39,16 +38,6 @@ contract GestoreGenerale is GestioneRuoli{
     * @param numeroPunti numero dei punti da aggiungere alla carta
     */
     function addPunti(bytes32 id_carta, uint numeroPunti) public {
-        bytes32 id_consorzio_carta = consorzioNegozi[carte[id_carta].negozio];
-        bytes32 id_consorzio_funzionario = consorzioNegozi[funzionari[msg.sender].negozio];
-
-        require(carte[id_carta].negozio == funzionari[msg.sender].negozio || id_consorzio_carta == id_consorzio_funzionario);
-        carte[id_carta].punti += numeroPunti;
-    }
-    function addPunti2(bytes32 id_carta, uint numeroPunti) public onlyFunzionarioConsorzio(id_carta){
-        carte[id_carta].punti += numeroPunti;
-    }
-    function addPunti3(bytes32 id_carta, uint numeroPunti) public {
         if(checkAuthority(id_carta) == true)
             carte[id_carta].punti += numeroPunti;  
     }
@@ -59,9 +48,9 @@ contract GestoreGenerale is GestioneRuoli{
     * @param id_carta codice univoco della carta
     * @param numeroPunti numero dei punti da decrementare dalla carta
     */
-    function removePunti(bytes32 id_carta, uint numeroPunti) public onlyFunzionarioOrOwner{
-        //listaCarte_clienti[id_cliente][id_carta].punti -= numeroPunti;
-        carte[id_carta].punti -= numeroPunti;
+    function removePunti(bytes32 id_carta, uint numeroPunti) public {
+        if(checkAuthority(id_carta) == true)
+            carte[id_carta].punti -= numeroPunti;
     }
 
     /**
@@ -70,7 +59,6 @@ contract GestoreGenerale is GestioneRuoli{
     */
     function getPunti(bytes32 id_carta) public view returns(uint){
         return carte[id_carta].punti;
-        //return listaCarte_clienti[id_cliente][id_carta].punti;
     }
 
     /**
@@ -79,16 +67,18 @@ contract GestoreGenerale is GestioneRuoli{
     * @param id codice univoco del cliente
     * @param notazione la notazione o descrizione che si vuole inserire su un cliente
     */
-    function addNote(bytes32 id, string memory notazione) public onlyFunzionarioOrOwner{
-        clienti[id].note = notazione;
+    function addNote(bytes32 id, string memory notazione) public {
+        if(checkAuthority(id) == true)
+            clienti[id].note = notazione;
     }
 
     /**
     * @dev Funzione che azzera i punti di una carta
     * @param id codice univoco della carta
     */
-    function azzeraPunti(bytes32 id) public onlyFunzionarioOrOwner{
-        carte[id].punti = 0;
+    function azzeraPunti(bytes32 id) public{
+        if(checkAuthority(id) == true)
+            carte[id].punti = 0;
     }
 
     /**
@@ -98,24 +88,26 @@ contract GestoreGenerale is GestioneRuoli{
     * @param id_from codice univoco della carta dalla quale prendere i punti
     * @param id_destinatario codice univoco della carta alla quale saranno aggiunti i punti
     */
-    function movePunti(bytes32 id_from, bytes32 id_destinatario) public onlyFunzionarioOrOwner{
+    function movePunti(bytes32 id_from, bytes32 id_destinatario) public {
         uint ammontare = carte[id_from].punti;
-        carte[id_destinatario].punti += ammontare;
+        if(checkAuthority(id_from) && checkAuthority(id_destinatario))
+            carte[id_destinatario].punti += ammontare;
     }
 
     /**
     * @dev Funzione che elimina una carta
     * @param id codice univoco della carta
     */
-    function deleteCarta(bytes32 id) public onlyFunzionarioOrOwner{
-        delete carte[id];
+    function deleteCarta(bytes32 id) public {
+        if(checkAuthority(id) == true)
+            delete carte[id];
     }
 
     /**
     * @dev Funzione che elimina un cliente
     * @param id_cliente codice univoco del cliente
     */
-    function deleteCliente(bytes32 id_cliente) public onlyFunzionarioOrOwner{
+    function deleteCliente(bytes32 id_cliente) public onlyOwner{
         delete clienti[id_cliente];
     }
 
@@ -151,23 +143,8 @@ contract GestoreGenerale is GestioneRuoli{
         }
     }
 
-
-    // modifier onlyFunzionarioNegozio(bytes32 id_carta){
-    //     require(carte[id_carta].negozio == funzionari[msg.sender].negozio);
-    //     _;
-    // }
-    
-    modifier onlyFunzionarioConsorzio(bytes32 id_carta){  
-        bytes32 id_consorzio_carta = consorzioNegozi[carte[id_carta].negozio];
-        bytes32 id_consorzio_funzionario = consorzioNegozi[funzionari[msg.sender].negozio];
-
-        //il negozio della carta è uguale al negozio in cui lavora il funzionario oppure fa parte dello stesso consorzio di negozi in cui lavora il funzionario
-        require(carte[id_carta].negozio == funzionari[msg.sender].negozio || id_consorzio_carta == id_consorzio_funzionario);
-        _;
-    }
-
     /**
-    *@dev Funzione che controlla se c'è l'autorità di incrementare i punti.
+    *@dev Funzione che controlla se c'è l'autorità di operare
     * [1] la carta deve essere dello stesso negozio in cui opera il funzionario
     * Oppure
     * [2] la carta deve appartenere allo stesso consorzio di negozi in cui opera il funzionario (carta di un negozio diverso, stesso consorzio)
