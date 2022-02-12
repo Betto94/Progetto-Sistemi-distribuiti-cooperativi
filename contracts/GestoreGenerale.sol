@@ -10,7 +10,6 @@ import "./GestioneRuoli.sol";
 */
 contract GestoreGenerale is GestioneRuoli{
 
-    //mapping(bytes32 => mapping(bytes32 => Carta)) public listaCarte_clienti; //
     mapping(bytes32 => Carta) public carte;
 
     event NuovaCarta(
@@ -39,13 +38,21 @@ contract GestoreGenerale is GestioneRuoli{
     * @param id_carta codice univoco della carta
     * @param numeroPunti numero dei punti da aggiungere alla carta
     */
-    function addPunti(bytes32 id_carta, uint numeroPunti) public onlyFunzionarioOrOwner{
+    function addPunti(bytes32 id_carta, uint numeroPunti) public {
+        bytes32 id_consorzio_carta = consorzioNegozi[carte[id_carta].negozio];
+        bytes32 id_consorzio_funzionario = consorzioNegozi[funzionari[msg.sender].negozio];
+
+        require(carte[id_carta].negozio == funzionari[msg.sender].negozio || id_consorzio_carta == id_consorzio_funzionario);
         carte[id_carta].punti += numeroPunti;
-        //listaCarte_clienti[id_cliente][id_carta].punti += numeroPunti;
     }
-    function addPunti2(bytes32 id_carta, uint numeroPunti) public onlyFunzionarioNegozio(id_carta){
+    function addPunti2(bytes32 id_carta, uint numeroPunti) public onlyFunzionarioConsorzio(id_carta){
         carte[id_carta].punti += numeroPunti;
     }
+    function addPunti3(bytes32 id_carta, uint numeroPunti) public {
+        if(checkAuthority(id_carta) == true)
+            carte[id_carta].punti += numeroPunti;  
+    }
+
 
     /**
     * @dev Funzione che decrementa i punti ad una carta
@@ -145,25 +152,31 @@ contract GestoreGenerale is GestioneRuoli{
     }
 
 
-////////////////////////////////////////////////////////////////////////////
-    modifier onlyFunzionarioNegozio(bytes32 id_carta){
-        require(carte[id_carta].negozio == funzionari[msg.sender].negozio);
-        _;
-    }
+    // modifier onlyFunzionarioNegozio(bytes32 id_carta){
+    //     require(carte[id_carta].negozio == funzionari[msg.sender].negozio);
+    //     _;
+    // }
     
     modifier onlyFunzionarioConsorzio(bytes32 id_carta){  
-        bool appartenenteConsorzio = false;
-        // Negozio negozio = carte[id_carta].negozio;
-        // bytes32 id_consorzio = consorzioNegozi[negozio];
         bytes32 id_consorzio_carta = consorzioNegozi[carte[id_carta].negozio];
         bytes32 id_consorzio_funzionario = consorzioNegozi[funzionari[msg.sender].negozio];
 
-        if(id_consorzio_carta == id_consorzio_funzionario)
-            appartenenteConsorzio = true;
-
         //il negozio della carta è uguale al negozio in cui lavora il funzionario oppure fa parte dello stesso consorzio di negozi in cui lavora il funzionario
-        require(carte[id_carta].negozio == funzionari[msg.sender].negozio || appartenenteConsorzio == true);
+        require(carte[id_carta].negozio == funzionari[msg.sender].negozio || id_consorzio_carta == id_consorzio_funzionario);
         _;
+    }
+
+    /**
+    *@dev Funzione che controlla se c'è l'autorità di incrementare i punti.
+    * [1] la carta deve essere dello stesso negozio in cui opera il funzionario
+    * Oppure
+    * [2] la carta deve appartenere allo stesso consorzio di negozi in cui opera il funzionario (carta di un negozio diverso, stesso consorzio)
+    *@param id_carta id univoco della carta su cui si vuole effettuare l'operazione
+    */
+    function checkAuthority(bytes32 id_carta) public returns (bool){
+        bytes32 id_consorzio_carta = consorzioNegozi[carte[id_carta].negozio];
+        bytes32 id_consorzio_funzionario = consorzioNegozi[funzionari[msg.sender].negozio];
+        return (carte[id_carta].negozio == funzionari[msg.sender].negozio || id_consorzio_carta == id_consorzio_funzionario);
     }
 
 }
