@@ -119,11 +119,17 @@ contract GestoreGenerale is GestioneRuoli{
     mapping(Negozio => bytes32) public consorzioNegozi;
     mapping(bytes32 => Consorzio) public consorzi;
 
-    function addConsorzio(string memory nome) public onlyOwner{
+    event NuovoConsorzio(
+        bytes32 id,
+        string nome
+    );
+
+    function addConsorzio(string memory nome) public onlyOwner {
         bytes32 ID = keccak256(abi.encodePacked(nome));
         Negozio[] memory n;
         Consorzio memory c = Consorzio(ID, nome, n);
         consorzi[ID] = c;
+        emit NuovoConsorzio(ID, nome);
     }
 
     function addNegozioConsorzio(Negozio negozio, bytes32 id_consorzio) public onlyOwner{
