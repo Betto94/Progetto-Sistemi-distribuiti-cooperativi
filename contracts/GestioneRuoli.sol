@@ -87,6 +87,7 @@ contract GestioneRuoli{
         string dataDiNascita
     );
 
+
     /**
     * @dev Funzione che crea un nuovo cliente e gli assegna un codice univoco
     * Questa funzione può essere invocata dal proprietario o da un funzionario
@@ -100,6 +101,11 @@ contract GestioneRuoli{
         Cliente memory c = Cliente(ID, nome, cognome, data_nascita, "null");
         clienti[c.id] = c;
         emit NuovoCliente(ID, nome, cognome, data_nascita);
+        return ID;
+    }
+
+    function retIdCliente(string memory nome, string memory cognome, string memory data_nascita) public pure returns(bytes32){
+        bytes32 ID = keccak256(abi.encodePacked(nome, cognome, data_nascita));
         return ID;
     }
 
