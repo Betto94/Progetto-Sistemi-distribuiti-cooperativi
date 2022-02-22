@@ -1,0 +1,25 @@
+{
+  "name": "progetto-sistemi-distribuiti-cooperativi",
+  "version": "1.0.0",
+  "description": "SDC 2122",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Betto94/Progetto-Sistemi-distribuiti-cooperativi.git"
+  },
+  "author": "Gabriele Benedetti, Giulia Pascale",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/Betto94/Progetto-Sistemi-distribuiti-cooperativi/issues"
+  },
+  "homepage": "https://github.com/Betto94/Progetto-Sistemi-distribuiti-cooperativi#readme",
+  "dependencies": {
+    "@truffle/contract": "^4.4.9",
+    "@truffle/hdwallet-provider": "^2.0.3",
+    "dotenv": "^16.0.0",
+    "web3": "^1.7.0"
+  }
+}
